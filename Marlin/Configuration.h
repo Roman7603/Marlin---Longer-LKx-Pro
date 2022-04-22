@@ -945,9 +945,9 @@
   #define X_DRIVER_TYPE TMC2209 
   #define Y_DRIVER_TYPE TMC2209 
   #define Z_DRIVER_TYPE TMC2209 
+  #define Z2_DRIVER_TYPE TMC2209
   #define E0_DRIVER_TYPE A4988  
-  #define E1_DRIVER_TYPE TMC2209 //for Z2 axis
-  //#define Z2_DRIVER_TYPE TMC2209 //for Z2 axis
+  
 
 #else
   #define X_DRIVER_TYPE TMC2208_STANDALONE //  For Alphawise and Longer U30 pro LK4 pro
@@ -2292,7 +2292,7 @@
  * View the current statistics with M78.
  */
 #if defined(CustomMachine)
-  //#define PRINTCOUNTER // I am trying to fix - some compilation problem with FLASH_EEPROM_EMULATION
+  #define PRINTCOUNTER // I am trying to fix - some compilation problem with FLASH_EEPROM_EMULATION
 #else
   #define PRINTCOUNTER
 #endif

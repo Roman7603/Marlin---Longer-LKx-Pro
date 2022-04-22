@@ -750,7 +750,7 @@
 //
 // For Z set the number of stepper drivers
 //
-#define NUM_Z_STEPPER_DRIVERS 1 // (1-4) Z options change based on how many
+#define NUM_Z_STEPPER_DRIVERS 2 // (1-4) Z options change based on how many
 
 #if NUM_Z_STEPPER_DRIVERS > 1
 // Enable if Z motor direction signals are the opposite of Z1
@@ -941,7 +941,13 @@
  * Z Steppers Auto-Alignment
  * Add the G34 command to align multiple Z steppers using a bed probe.
  */
- //#define Z_STEPPER_AUTO_ALIGN
+#if defined(CustomMachine)
+  //#define Z_STEPPER_AUTO_ALIGN
+ #else
+  //#define Z_STEPPER_AUTO_ALIGN
+#endif
+
+ 
 #if ENABLED(Z_STEPPER_AUTO_ALIGN)
 // Define probe X and Y positions for Z1, Z2 [, Z3 [, Z4]]
 // If not defined, probe limits will be used.
@@ -968,7 +974,9 @@
    *               | 1   2 | 2   3 | 3   4 | 4   1 |
    */
 #ifndef Z_STEPPER_ALIGN_XY
-   //#define Z_STEPPERS_ORIENTATION 0
+    #if defined(CustomMachine)   
+        //#define Z_STEPPERS_ORIENTATION 0
+    #endif
 #endif
 
 // Provide Z stepper positions for more rapid convergence in bed alignment.
@@ -1086,7 +1094,11 @@
  * See https://hydraraptor.blogspot.com/2010/12/frequency-limit.html
  * Use M201 F<freq> G<min%> to change limits at runtime.
  */
- //#define XY_FREQUENCY_LIMIT      10 // (Hz) Maximum frequency of small zigzag infill moves. Set with M201 F<hertz>.
+#if defined(CustomMachine)   
+    //#define XY_FREQUENCY_LIMIT      10 // (Hz) Maximum frequency of small zigzag infill moves. Set with M201 F<hertz>.
+ #else 
+    //#define XY_FREQUENCY_LIMIT      10 // (Hz) Maximum frequency of small zigzag infill moves. Set with M201 F<hertz>.
+ #endif
 #ifdef XY_FREQUENCY_LIMIT
 #define XY_FREQUENCY_MIN_PERCENT 5 // (percent) Minimum FR percentage to apply. Set with M201 G<min%>.
 #endif
@@ -1399,10 +1411,10 @@
   //#define LCD_TIMEOUT_TO_STATUS 15000
 
 #if ENABLED(SHOW_BOOTSCREEN)
-#define BOOTSCREEN_TIMEOUT 4000 // (ms) Total Duration to display the boot screen(s)
-#if EITHER(HAS_MARLINUI_U8GLIB, TFT_COLOR_UI)
-#define BOOT_MARLIN_LOGO_SMALL // Show a smaller Marlin logo on the Boot Screen (saving lots of flash)
-#endif
+  #define BOOTSCREEN_TIMEOUT 4000 // (ms) Total Duration to display the boot screen(s)
+  #if EITHER(HAS_MARLINUI_U8GLIB, TFT_COLOR_UI)
+    #define BOOT_MARLIN_LOGO_SMALL // Show a smaller Marlin logo on the Boot Screen (saving lots of flash)
+  #endif
 #endif
 
 // Scroll a longer status message into view
@@ -1415,13 +1427,13 @@
 #define LCD_SET_PROGRESS_MANUALLY
 
 // Show the E position (filament used) during printing
-//#define LCD_SHOW_E_TOTAL
+#define LCD_SHOW_E_TOTAL
 #endif
 
 // LCD Print Progress options
 #if EITHER(SDSUPPORT, LCD_SET_PROGRESS_MANUALLY)
   #if CAN_SHOW_REMAINING_TIME
-    //#define SHOW_REMAINING_TIME         // Display estimated time to completion
+      //#define SHOW_REMAINING_TIME         // Display estimated time to completion
     #if ENABLED(SHOW_REMAINING_TIME)
       //#define USE_M73_REMAINING_TIME    // Use remaining time from M73 command instead of estimation
       //#define ROTATE_PROGRESS_DISPLAY   // Display (P)rogress, (E)lapsed, and (R)emaining time
@@ -1499,7 +1511,7 @@
    */
 #define POWER_LOSS_RECOVERY //  For Alphawise and Longer U30 pro LK4 pro
 #if ENABLED(POWER_LOSS_RECOVERY)
-#define PLR_ENABLED_DEFAULT true // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)
+  #define PLR_ENABLED_DEFAULT true // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)
    //#define BACKUP_POWER_SUPPLY       // Backup power / UPS to move the steppers on power loss
    //#define POWER_LOSS_ZRAISE       2 // (mm) Z axis raise on resume (on power loss with UPS)
    //#define POWER_LOSS_PIN         44 // Pin to detect power loss. Set to -1 to disable default pin on boards without module.
@@ -1511,13 +1523,13 @@
 
    // Without a POWER_LOSS_PIN the following option helps reduce wear on the SD card,
    // especially with "vase mode" printing. Set too high and vases cannot be continued.
-#define POWER_LOSS_MIN_Z_CHANGE 0.05 // (mm) Minimum Z change before saving power-loss data
+  #define POWER_LOSS_MIN_Z_CHANGE 0.05 // (mm) Minimum Z change before saving power-loss data
 
-// Enable if Z homing is needed for proper recovery. 99.9% of the time this should be disabled!
-//#define POWER_LOSS_RECOVER_ZHOME
-#if ENABLED(POWER_LOSS_RECOVER_ZHOME)
-//#define POWER_LOSS_ZHOME_POS { 0, 0 } // Safe XY position to home Z while avoiding objects on the bed
-#endif
+  // Enable if Z homing is needed for proper recovery. 99.9% of the time this should be disabled!
+  //#define POWER_LOSS_RECOVER_ZHOME
+  #if ENABLED(POWER_LOSS_RECOVER_ZHOME)
+  //#define POWER_LOSS_ZHOME_POS { 0, 0 } // Safe XY position to home Z while avoiding objects on the bed
+  #endif
 #endif
 
 /**
@@ -1666,7 +1678,11 @@
    *
    * :[ 'LCD', 'ONBOARD', 'CUSTOM_CABLE' ]
    */
+   #if defined(CustomMachine)
+   #define SDCARD_CONNECTION ONBOARD
+   #else
    //#define SDCARD_CONNECTION LCD
+   #endif
 
    // Enable if SD detect is rendered useless (e.g., by using an SD extender)
    //#define NO_SD_DETECT
@@ -1780,9 +1796,13 @@
 //
 #if HAS_DGUS_LCD
 #if ENABLED(LGT_MAC)
-#define LCD_SERIAL_PORT 1 // Serial port 1 for Alphawise and Longer with LGT moterboard
+  #if defined(CustomMachine)
+    #define LCD_SERIAL_PORT 3 // for BTT SKR 2
+  #else
+    #define LCD_SERIAL_PORT 1 // Serial port 1 for Alphawise and Longer with LGT moterboard
+  #endif
 #else
-#define LCD_SERIAL_PORT 3
+  #define LCD_SERIAL_PORT 3
 #endif
 #define LCD_BAUDRATE 115200
 
@@ -2012,10 +2032,10 @@
 #if HAS_BED_PROBE
   #define BABYSTEP_ZPROBE_OFFSET // Combine M851 Z and Babystepping
 #endif
-#if ENABLED(BABYSTEP_ZPROBE_OFFSET)
-//#define BABYSTEP_HOTEND_Z_OFFSET      // For multiple hotends, babystep relative Z offsets
-//#define BABYSTEP_ZPROBE_GFX_OVERLAY   // Enable graphical overlay on Z-offset editor
-#endif
+  #if ENABLED(BABYSTEP_ZPROBE_OFFSET)
+    //#define BABYSTEP_HOTEND_Z_OFFSET      // For multiple hotends, babystep relative Z offsets
+    //#define BABYSTEP_ZPROBE_GFX_OVERLAY   // Enable graphical overlay on Z-offset editor
+  #endif
 #endif
 
 // @section extruder
@@ -2035,13 +2055,13 @@
  *
  * See https://marlinfw.org/docs/features/lin_advance.html for full instructions.
  */
- //#define LIN_ADVANCE
+#define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
   //#define EXTRA_LIN_ADVANCE_K // Enable for second linear advance constants
-  #define LIN_ADVANCE_K 0.22    // Unit: mm compression per 1mm/s extruder speed
-  //#define LA_DEBUG            // If enabled, this will generate debug information output over USB.
-  //#define EXPERIMENTAL_SCURVE // Enable this option to permit S-Curve Acceleration
-  //#define ALLOW_LOW_EJERK     // Allow a DEFAULT_EJERK value of <10. Recommended for direct drive hotends.
+  #define LIN_ADVANCE_K 0.00    // Unit: mm compression per 1mm/s extruder speed
+  #define LA_DEBUG            // If enabled, this will generate debug information output over USB.
+  #define EXPERIMENTAL_SCURVE // Enable this option to permit S-Curve Acceleration
+  #define ALLOW_LOW_EJERK     // Allow a DEFAULT_EJERK value of <10. Recommended for direct drive hotends.
 #endif
 
 // @section leveling
@@ -2350,7 +2370,12 @@
  * Currently handles M108, M112, M410, M876
  * NOTE: Not yet implemented for all platforms.
  */
-#define EMERGENCY_PARSER
+ 
+#if defined(CustomMachine)
+//#define EMERGENCY_PARSER
+#else
+  #define EMERGENCY_PARSER
+#endif
 
  /**
   * Realtime Reporting (requires EMERGENCY_PARSER)
@@ -2536,23 +2561,23 @@
 #define PAUSE_PARK_RETRACT_FEEDRATE 40        // (mm/s) Initial retract feedrate.
 #define PAUSE_PARK_RETRACT_LENGTH 5           // (mm) Initial retract. 
  // This short retract is done immediately, before parking the nozzle.
-#define FILAMENT_CHANGE_UNLOAD_FEEDRATE 30    // (mm/s) Unload filament feedrate. This can be pretty fast.
+#define FILAMENT_CHANGE_UNLOAD_FEEDRATE 10   // (mm/s) Unload filament feedrate. This can be pretty fast.
 #define FILAMENT_CHANGE_UNLOAD_ACCEL 25       // (mm/s^2) Lower acceleration may allow a faster feedrate.
-#define FILAMENT_CHANGE_UNLOAD_LENGTH 500     // (mm) The length of filament for a complete unload.    
+#define FILAMENT_CHANGE_UNLOAD_LENGTH 100     // (mm) The length of filament for a complete unload.    
                                               //   For Bowden, the full length of the tube and nozzle. 
                                               //   For direct drive, the full length of the nozzle.    
                                               //   Set to 0 for manual unloading.
 #define FILAMENT_CHANGE_SLOW_LOAD_FEEDRATE 6  // (mm/s) Slow move when starting load.
 #define FILAMENT_CHANGE_SLOW_LOAD_LENGTH 30   // (mm) Slow length, to allow time to insert material. 
                                               // 0 to disable start loading and skip to fast load only
-#define FILAMENT_CHANGE_FAST_LOAD_FEEDRATE 25 // (mm/s) Load filament feedrate. This can be pretty fast.
+#define FILAMENT_CHANGE_FAST_LOAD_FEEDRATE 10 // (mm/s) Load filament feedrate. This can be pretty fast.
 #define FILAMENT_CHANGE_FAST_LOAD_ACCEL 25    // (mm/s^2) Lower acceleration may allow a faster feedrate.
-#define FILAMENT_CHANGE_FAST_LOAD_LENGTH 400  // (mm) Load length of filament, from extruder gear to nozzle. 
+#define FILAMENT_CHANGE_FAST_LOAD_LENGTH 20  // (mm) Load length of filament, from extruder gear to nozzle. 
                                               //   For Bowden, the full length of the tube and nozzle.       
                                               //   For direct drive, the full length of the nozzle.
 //#define ADVANCED_PAUSE_CONTINUOUS_PURGE       // Purge continuously up to the purge length until interrupted.
 #define ADVANCED_PAUSE_PURGE_FEEDRATE 3 // (mm/s) Extrude feedrate (after loading). Should be slower than load feedrate.
-#define ADVANCED_PAUSE_PURGE_LENGTH 0   //50  // (mm) Length to extrude after loading.                         
+#define ADVANCED_PAUSE_PURGE_LENGTH 50  // (mm) Length to extrude after loading.                         
                                         //   Set to 0 for manual extrusion.                                    
                                         //   Filament can be extruded repeatedly from the Filament Change menu 
                                         //   until extrusion is consistent, and to purge old filament.
@@ -2565,7 +2590,7 @@
 #define FILAMENT_UNLOAD_PURGE_LENGTH 8    // (mm) An unretract is done, then this length is purged.
 #define FILAMENT_UNLOAD_PURGE_FEEDRATE 25 // (mm/s) feedrate to purge before unload
 
-#define PAUSE_PARK_NOZZLE_TIMEOUT 600  // (seconds) Time limit before the nozzle is turned off for safety.
+#define PAUSE_PARK_NOZZLE_TIMEOUT 300  // (seconds) Time limit before the nozzle is turned off for safety.
 #define FILAMENT_CHANGE_ALERT_BEEPS 10 // Number of alert beeps to play when a response is needed.
 #define PAUSE_PARK_NO_STEPPER_TIMEOUT  // Enable for XYZ steppers to stay powered on during filament change.
 //#define FILAMENT_CHANGE_RESUME_ON_INSERT      // Automatically continue / load filament when runout sensor is triggered again.
@@ -2914,160 +2939,6 @@
     //#define E7_HOLD_MULTIPLIER 0.5
   #endif
 
-#if AXIS_IS_TMC(X2)
-#define X2_CURRENT 800
-#define X2_CURRENT_HOME X2_CURRENT
-#define X2_MICROSTEPS X_MICROSTEPS
-#define X2_RSENSE 0.11
-#define X2_CHAIN_POS -1
-//#define X2_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(Y)
-#define Y_CURRENT 800
-#define Y_CURRENT_HOME Y_CURRENT
-#define Y_MICROSTEPS 16
-#define Y_RSENSE 0.11
-#define Y_CHAIN_POS -1
-//#define Y_INTERPOLATE  true
-#endif
-
-#if AXIS_IS_TMC(Y2)
-#define Y2_CURRENT 800
-#define Y2_CURRENT_HOME Y2_CURRENT
-#define Y2_MICROSTEPS Y_MICROSTEPS
-#define Y2_RSENSE 0.11
-#define Y2_CHAIN_POS -1
-//#define Y2_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(Z)
-#define Z_CURRENT 800
-#define Z_CURRENT_HOME Z_CURRENT
-#define Z_MICROSTEPS 16
-#define Z_RSENSE 0.11
-#define Z_CHAIN_POS -1
-//#define Z_INTERPOLATE  true
-#endif
-
-#if AXIS_IS_TMC(Z2)
-#define Z2_CURRENT 800
-#define Z2_CURRENT_HOME Z2_CURRENT
-#define Z2_MICROSTEPS Z_MICROSTEPS
-#define Z2_RSENSE 0.11
-#define Z2_CHAIN_POS -1
-//#define Z2_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(Z3)
-#define Z3_CURRENT 800
-#define Z3_CURRENT_HOME Z3_CURRENT
-#define Z3_MICROSTEPS Z_MICROSTEPS
-#define Z3_RSENSE 0.11
-#define Z3_CHAIN_POS -1
-//#define Z3_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(Z4)
-#define Z4_CURRENT 800
-#define Z4_CURRENT_HOME Z4_CURRENT
-#define Z4_MICROSTEPS Z_MICROSTEPS
-#define Z4_RSENSE 0.11
-#define Z4_CHAIN_POS -1
-//#define Z4_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(I)
-#define I_CURRENT 800
-#define I_CURRENT_HOME I_CURRENT
-#define I_MICROSTEPS 16
-#define I_RSENSE 0.11
-#define I_CHAIN_POS -1
-//#define I_INTERPOLATE  true
-#endif
-
-#if AXIS_IS_TMC(J)
-#define J_CURRENT 800
-#define J_CURRENT_HOME J_CURRENT
-#define J_MICROSTEPS 16
-#define J_RSENSE 0.11
-#define J_CHAIN_POS -1
-//#define J_INTERPOLATE  true
-#endif
-
-#if AXIS_IS_TMC(K)
-#define K_CURRENT 800
-#define K_CURRENT_HOME K_CURRENT
-#define K_MICROSTEPS 16
-#define K_RSENSE 0.11
-#define K_CHAIN_POS -1
-//#define K_INTERPOLATE  true
-#endif
-
-#if AXIS_IS_TMC(E0)
-#define E0_CURRENT 800
-#define E0_MICROSTEPS 16
-#define E0_RSENSE 0.11
-#define E0_CHAIN_POS -1
-//#define E0_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(E1)
-#define E1_CURRENT 800
-#define E1_MICROSTEPS E0_MICROSTEPS
-#define E1_RSENSE 0.11
-#define E1_CHAIN_POS -1
-//#define E1_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(E2)
-#define E2_CURRENT 800
-#define E2_MICROSTEPS E0_MICROSTEPS
-#define E2_RSENSE 0.11
-#define E2_CHAIN_POS -1
-//#define E2_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(E3)
-#define E3_CURRENT 800
-#define E3_MICROSTEPS E0_MICROSTEPS
-#define E3_RSENSE 0.11
-#define E3_CHAIN_POS -1
-//#define E3_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(E4)
-#define E4_CURRENT 800
-#define E4_MICROSTEPS E0_MICROSTEPS
-#define E4_RSENSE 0.11
-#define E4_CHAIN_POS -1
-//#define E4_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(E5)
-#define E5_CURRENT 800
-#define E5_MICROSTEPS E0_MICROSTEPS
-#define E5_RSENSE 0.11
-#define E5_CHAIN_POS -1
-//#define E5_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(E6)
-#define E6_CURRENT 800
-#define E6_MICROSTEPS E0_MICROSTEPS
-#define E6_RSENSE 0.11
-#define E6_CHAIN_POS -1
-//#define E6_INTERPOLATE true
-#endif
-
-#if AXIS_IS_TMC(E7)
-#define E7_CURRENT 800
-#define E7_MICROSTEPS E0_MICROSTEPS
-#define E7_RSENSE 0.11
-#define E7_CHAIN_POS -1
-//#define E7_INTERPOLATE true
-#endif
-
 /**
    * Override default SPI pins for TMC2130, TMC2160, TMC2660, TMC5130 and TMC5160 drivers here.
    * The default pins can be found in your board's pins file.
@@ -3169,7 +3040,7 @@
                   * Define your own with:
                   * { <off_time[1..15]>, <hysteresis_end[-3..12]>, hysteresis_start[1..8] }
                   */
-#define CHOPPER_TIMING CHOPPER_DEFAULT_12V // All axes (override below)
+#define CHOPPER_TIMING CHOPPER_DEFAULT_24V // All axes (override below)
                   //#define CHOPPER_TIMING_X  CHOPPER_TIMING        // For X Axes (override below)
                   //#define CHOPPER_TIMING_X2 CHOPPER_TIMING_X
                   //#define CHOPPER_TIMING_Y  CHOPPER_TIMING        // For Y Axes (override below)
@@ -3178,7 +3049,11 @@
                   //#define CHOPPER_TIMING_Z2 CHOPPER_TIMING_Z
                   //#define CHOPPER_TIMING_Z3 CHOPPER_TIMING_Z
                   //#define CHOPPER_TIMING_Z4 CHOPPER_TIMING_Z
+#if defined(CustomMachine)
+    #define CHOPPER_TIMING_E  CHOPPER_09STEP_24V        // For Extruders (override below)
+#else
                   //#define CHOPPER_TIMING_E  CHOPPER_TIMING        // For Extruders (override below)
+#endif
                   //#define CHOPPER_TIMING_E1 CHOPPER_TIMING_E
                   //#define CHOPPER_TIMING_E2 CHOPPER_TIMING_E
                   //#define CHOPPER_TIMING_E3 CHOPPER_TIMING_E
@@ -3198,12 +3073,17 @@
                      * M912 - Clear stepper driver overtemperature pre-warn condition flag.
                      * M122 - Report driver parameters (Requires TMC_DEBUG)
                      */
-                     //#define MONITOR_DRIVER_STATUS
+
+#if defined(CustomMachine)
+ #define MONITOR_DRIVER_STATUS
+#else
+ //#define MONITOR_DRIVER_STATUS
+#endif
 
 #if ENABLED(MONITOR_DRIVER_STATUS)
-#define CURRENT_STEP_DOWN 50 // [mA]
-#define REPORT_CURRENT_CHANGE
-#define STOP_ON_ERROR
+ #define CURRENT_STEP_DOWN 50 // [mA]
+ #define REPORT_CURRENT_CHANGE
+ #define STOP_ON_ERROR
 #endif
 
 /**
@@ -3301,7 +3181,11 @@
          * Enable M122 debugging command for TMC stepper drivers.
          * M122 S0/1 will enable continuous reporting.
          */
-         //#define TMC_DEBUG
+#if defined(CustomMachine)
+ #define TMC_DEBUG
+#else
+ //#define TMC_DEBUG
+#endif
 
          /**
             * You can set your own advanced settings by filling in predefined functions.
@@ -4291,7 +4175,7 @@
  * Adds capability to work with any adjustable current drivers.
  * Implemented as G34 because M915 is deprecated.
  */
- //#define MECHANICAL_GANTRY_CALIBRATION
+ #define MECHANICAL_GANTRY_CALIBRATION
 #if ENABLED(MECHANICAL_GANTRY_CALIBRATION)
 #define GANTRY_CALIBRATION_CURRENT 600     // Default calibration current in ma
 #define GANTRY_CALIBRATION_EXTRA_HEIGHT 15 // Extra distance in mm past Z_###_POS to move
