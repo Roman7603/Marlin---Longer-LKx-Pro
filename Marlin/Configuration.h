@@ -2292,7 +2292,7 @@
  * View the current statistics with M78.
  */
 #if defined(CustomMachine)
-  #define PRINTCOUNTER // I am trying to fix - some compilation problem with FLASH_EEPROM_EMULATION
+  //#define PRINTCOUNTER // I am trying to fix - some compilation problem with FLASH_EEPROM_EMULATION
 #else
   #define PRINTCOUNTER
 #endif
