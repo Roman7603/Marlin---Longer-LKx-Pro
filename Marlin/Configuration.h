@@ -95,17 +95,23 @@
 // @section machine
 #define LGT_MAC //  For Alphawise and Longer U30 pro LK4 pro
 #define LK4_Pro //  for LK4pro
+#define CustomMachine //specif machine different from Longer (board, extruder, dimensions)
 //#define LK5_Pro //  for LK5pro
-#define LKPro_BLTOUCH // for LK4 and LK5
+//#define LKPro_BLTOUCH // for LK4 and LK5
 
 #define LKPro_FW_VERSION "G5"
 #define LCD_HEIGHT 4 // number of message lines in the wait screen
 //#define DEBUG_DGUSLCD
-//#define FILAMENT_RUNOUT_SENSOR_DEBUG
+#define FILAMENT_RUNOUT_SENSOR_DEBUG
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_LONGER3D_LKx_PRO //  For Alphawise and Longer U30 pro LK4 pro with LGT motherboard
+  #if defined(CustomMachine)   
+      #define MOTHERBOARD BOARD_BTT_SKR_V2_0_REV_B //for yours upgraded board
+   #else
+      #define MOTHERBOARD BOARD_LONGER3D_LKx_PRO //  For Alphawise and Longer U30 pro LK4 pro with LGT motherboard
+    #endif
+
 #endif
 
 /**
@@ -116,7 +122,12 @@
  *
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT 0
+ #if defined(CustomMachine)
+    #define SERIAL_PORT 1 // for BigtreeTech SKR V2.0
+    #define SERIAL_PORT_2 -1 // for BigtreeTech SKR V2.0
+ #else
+    #define SERIAL_PORT 0
+#endif
 
 /**
  * Serial Port Baud Rate
@@ -153,8 +164,11 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "LK4 Pro"
-
+#if defined(CustomMachine)
+    #define CUSTOM_MACHINE_NAME "LK4 Pro_32bit"
+  #else
+    #define CUSTOM_MACHINE_NAME "LK4 Pro"
+#endif
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
 //#define MACHINE_UUID "00000000-0000-0000-0000-000000000000"
@@ -365,14 +379,14 @@
  */
 //#define MIXING_EXTRUDER
 #if ENABLED(MIXING_EXTRUDER)
-#define MIXING_STEPPERS 2       // Number of steppers in your mixing extruder
-#define MIXING_VIRTUAL_TOOLS 16 // Use the Virtual Tool method with M163 and M164
-//#define DIRECT_MIXING_IN_G1    // Allow ABCDHI mix factors in G1 movement commands
-//#define GRADIENT_MIX           // Support for gradient mixing with M166 and LCD
-//#define MIXING_PRESETS         // Assign 8 default V-tool presets for 2 or 3 MIXING_STEPPERS
-#if ENABLED(GRADIENT_MIX)
-//#define GRADIENT_VTOOL       // Add M166 T to use a V-tool index as a Gradient alias
-#endif
+  #define MIXING_STEPPERS 2       // Number of steppers in your mixing extruder
+  #define MIXING_VIRTUAL_TOOLS 16 // Use the Virtual Tool method with M163 and M164
+  //#define DIRECT_MIXING_IN_G1    // Allow ABCDHI mix factors in G1 movement commands
+  //#define GRADIENT_MIX           // Support for gradient mixing with M166 and LCD
+  //#define MIXING_PRESETS         // Assign 8 default V-tool presets for 2 or 3 MIXING_STEPPERS
+  #if ENABLED(GRADIENT_MIX)
+  //#define GRADIENT_VTOOL       // Add M166 T to use a V-tool index as a Gradient alias
+  #endif
 #endif
 
 // Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
@@ -394,30 +408,30 @@
 //#define PSU_NAME "Power Supply"
 
 #if ENABLED(PSU_CONTROL)
-//#define MKS_PWC                 // Using the MKS PWC add-on
-//#define PS_OFF_CONFIRM          // Confirm dialog when power off
-//#define PS_OFF_SOUND            // Beep 1s when power off
-#define PSU_ACTIVE_STATE LOW // Set 'LOW' for ATX, 'HIGH' for X-Box
+  //#define MKS_PWC                 // Using the MKS PWC add-on
+  //#define PS_OFF_CONFIRM          // Confirm dialog when power off
+  //#define PS_OFF_SOUND            // Beep 1s when power off
+  #define PSU_ACTIVE_STATE LOW // Set 'LOW' for ATX, 'HIGH' for X-Box
 
-//#define PSU_DEFAULT_OFF         // Keep power off until enabled directly with M80
-//#define PSU_POWERUP_DELAY 250   // (ms) Delay for the PSU to warm up to full power
+  //#define PSU_DEFAULT_OFF         // Keep power off until enabled directly with M80
+  //#define PSU_POWERUP_DELAY 250   // (ms) Delay for the PSU to warm up to full power
 
-//#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
-//#define PSU_POWEROFF_GCODE "M355 S0"  // G-code to run before power-off (e.g., case light off)
+  //#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
+  //#define PSU_POWEROFF_GCODE "M355 S0"  // G-code to run before power-off (e.g., case light off)
 
-//#define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
-#if ENABLED(AUTO_POWER_CONTROL)
-#define AUTO_POWER_FANS // Turn on PSU if fans need power
-#define AUTO_POWER_E_FANS
-#define AUTO_POWER_CONTROLLERFAN
-#define AUTO_POWER_CHAMBER_FAN
-#define AUTO_POWER_COOLER_FAN
-//#define AUTO_POWER_E_TEMP        50 // (°C) Turn on PSU if any extruder is over this temperature
-//#define AUTO_POWER_CHAMBER_TEMP  30 // (°C) Turn on PSU if the chamber is over this temperature
-//#define AUTO_POWER_COOLER_TEMP   26 // (°C) Turn on PSU if the cooler is over this temperature
-#define POWER_TIMEOUT 30 // (s) Turn off power if the machine is idle for this duration
-                         //#define POWER_OFF_DELAY          60 // (s) Delay of poweroff after M81 command. Useful to let fans run for extra time.
-#endif
+  //#define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
+  #if ENABLED(AUTO_POWER_CONTROL)
+    #define AUTO_POWER_FANS // Turn on PSU if fans need power
+    #define AUTO_POWER_E_FANS
+    #define AUTO_POWER_CONTROLLERFAN
+    #define AUTO_POWER_CHAMBER_FAN
+    #define AUTO_POWER_COOLER_FAN
+    //#define AUTO_POWER_E_TEMP        50 // (°C) Turn on PSU if any extruder is over this temperature
+    //#define AUTO_POWER_CHAMBER_TEMP  30 // (°C) Turn on PSU if the chamber is over this temperature
+    //#define AUTO_POWER_COOLER_TEMP   26 // (°C) Turn on PSU if the cooler is over this temperature
+    #define POWER_TIMEOUT 30 // (s) Turn off power if the machine is idle for this duration
+                            //#define POWER_OFF_DELAY          60 // (s) Delay of poweroff after M81 command. Useful to let fans run for extra time.
+  #endif
 #endif
 
 //===========================================================================
@@ -530,8 +544,13 @@
 #define TEMP_SENSOR_REDUNDANT 0
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
-#define DUMMY_THERMISTOR_998_VALUE 25
-#define DUMMY_THERMISTOR_999_VALUE 100
+#if defined(CustomMachine)
+  #define DUMMY_THERMISTOR_998_VALUE 0
+  #define DUMMY_THERMISTOR_999_VALUE 999
+#else
+  #define DUMMY_THERMISTOR_998_VALUE 25
+  #define DUMMY_THERMISTOR_999_VALUE 100
+#endif
 
 // Resistor values when using MAX31865 sensors (-5) on TEMP_SENSOR_0 / 1
 //#define MAX31865_SENSOR_OHMS_0      100   // (Ω) Typically 100 or 1000 (PT100 or PT1000)
@@ -562,9 +581,9 @@
  * For selecting source/target use: COOLER, PROBE, BOARD, CHAMBER, BED, E0, E1, E2, E3, E4, E5, E6, E7
  */
 #if TEMP_SENSOR_REDUNDANT
-#define TEMP_SENSOR_REDUNDANT_SOURCE E1   // The sensor that will provide the redundant reading.
-#define TEMP_SENSOR_REDUNDANT_TARGET E0   // The sensor that we are providing a redundant reading for.
-#define TEMP_SENSOR_REDUNDANT_MAX_DIFF 10 // (°C) Temperature difference that will trigger a print abort.
+  #define TEMP_SENSOR_REDUNDANT_SOURCE E1   // The sensor that will provide the redundant reading.
+  #define TEMP_SENSOR_REDUNDANT_TARGET E0   // The sensor that we are providing a redundant reading for.
+  #define TEMP_SENSOR_REDUNDANT_MAX_DIFF 10 // (°C) Temperature difference that will trigger a print abort.
 #endif
 
 // Below this temperature the heater will be switched off
@@ -620,6 +639,7 @@
 //#define PID_AUTOTUNE_MENU     // Add PID auto-tuning to the "Advanced Settings" menu. (~250 bytes of PROGMEM)
 //#define PID_PARAMS_PER_HOTEND // Uses separate PID parameters for each extruder (useful for mismatched extruders)
 // Set/get with gcode: M301 E[extruder number, 0-2]
+#endif
 
 #if ENABLED(PID_PARAMS_PER_HOTEND)
 // Specify up to one value per hotend here, according to your setup.
@@ -637,11 +657,16 @@
         114.00, 114.00  \
     }
 #else
-// //Longer lk4 pro values from pidautotune
-#define DEFAULT_Kp 31.08
-#define DEFAULT_Ki 2.71
-#define DEFAULT_Kd 89.10
-#endif
+  #if defined(CustomMachine) //define your custom values from autotune if you have custom hotend
+   #define DEFAULT_Kp 25.27
+   #define DEFAULT_Ki 2.27
+   #define DEFAULT_Kd 70.37
+  #else 
+    //Longer lk4 pro values from pidautotune
+    #define DEFAULT_Kp 31.08
+    #define DEFAULT_Ki 2.71
+    #define DEFAULT_Kd 89.10
+  #endif
 #endif // PIDTEMP
 
 //===========================================================================
@@ -684,10 +709,15 @@
 // #define DEFAULT_bedKd 305.4
 
 //Longer lk4 pro values from pidautotune
-#define DEFAULT_bedKp 102.92
-#define DEFAULT_bedKi 16.53
-#define DEFAULT_bedKd 427.16
-
+#if defined(CustomMachine) //if you have some bed modifications
+  #define DEFAULT_bedKp 76.74
+  #define DEFAULT_bedKi 9.01
+  #define DEFAULT_bedKd 435.88
+#else
+  #define DEFAULT_bedKp 102.92
+  #define DEFAULT_bedKi 16.53
+  #define DEFAULT_bedKd 427.16
+#endif
 // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
 
@@ -760,8 +790,11 @@
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
-#define EXTRUDE_MAXLENGTH 500
-
+#if defined(CustomMachine)
+  #define EXTRUDE_MAXLENGTH 100 //custom value for direct drive 
+#else
+  #define EXTRUDE_MAXLENGTH 500 //default for longer bowden 
+#endif
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
 //===========================================================================
@@ -872,12 +905,12 @@
 #endif
 
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
-#define X_MIN_ENDSTOP_INVERTING true //  For Alphawise and Longer U30 pro LK4 pro
-#define Y_MIN_ENDSTOP_INVERTING true //  For Alphawise and Longer U30 pro LK4 pro
+#define X_MIN_ENDSTOP_INVERTING true        //  For Alphawise and Longer U30 pro LK4 pro
+#define Y_MIN_ENDSTOP_INVERTING true        //  For Alphawise and Longer U30 pro LK4 pro
 #if ENABLED(LKPro_BLTOUCH)
-  #define Z_MIN_ENDSTOP_INVERTING false //  For Alphawise and Longer U30 pro LK4 proo
+  #define Z_MIN_ENDSTOP_INVERTING false     //  For Alphawise and Longer U30 pro LK4 pro
 #else
-  #define Z_MIN_ENDSTOP_INVERTING true //  For Alphawise and Longer U30 pro LK4 proo
+  #define Z_MIN_ENDSTOP_INVERTING true      //  For Alphawise and Longer U30 pro LK4 pro
 #endif
 #define I_MIN_ENDSTOP_INVERTING false       // Set to true to invert the logic of the endstop.
 #define J_MIN_ENDSTOP_INVERTING false       // Set to true to invert the logic of the endstop.
@@ -908,25 +941,35 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'L6474', 'POWERSTEP01', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-#define X_DRIVER_TYPE TMC2208_STANDALONE //  For Alphawise and Longer U30 pro LK4 pro
-#define Y_DRIVER_TYPE TMC2208_STANDALONE //  For Alphawise and Longer U30 pro LK4 pro
-#define Z_DRIVER_TYPE TMC2208_STANDALONE //  For Alphawise and Longer U30 pro LK4 pro
-//#define X2_DRIVER_TYPE A4988
-//#define Y2_DRIVER_TYPE A4988
-//#define Z2_DRIVER_TYPE A4988
-//#define Z3_DRIVER_TYPE A4988
-//#define Z4_DRIVER_TYPE A4988
-//#define I_DRIVER_TYPE  A4988
-//#define J_DRIVER_TYPE  A4988
-//#define K_DRIVER_TYPE  A4988
-#define E0_DRIVER_TYPE A4988
-//#define E1_DRIVER_TYPE A4988
-//#define E2_DRIVER_TYPE A4988
-//#define E3_DRIVER_TYPE A4988
-//#define E4_DRIVER_TYPE A4988
-//#define E5_DRIVER_TYPE A4988
-//#define E6_DRIVER_TYPE A4988
-//#define E7_DRIVER_TYPE A4988
+#if defined(CustomMachine) //if you have other drivers as custom
+  #define X_DRIVER_TYPE TMC2209 
+  #define Y_DRIVER_TYPE TMC2209 
+  #define Z_DRIVER_TYPE TMC2209 
+  #define E0_DRIVER_TYPE A4988  
+  #define E1_DRIVER_TYPE TMC2209 //for Z2 axis
+  //#define Z2_DRIVER_TYPE TMC2209 //for Z2 axis
+
+#else
+  #define X_DRIVER_TYPE TMC2208_STANDALONE //  For Alphawise and Longer U30 pro LK4 pro
+  #define Y_DRIVER_TYPE TMC2208_STANDALONE //  For Alphawise and Longer U30 pro LK4 pro
+  #define Z_DRIVER_TYPE TMC2208_STANDALONE //  For Alphawise and Longer U30 pro LK4 pro
+  //#define X2_DRIVER_TYPE A4988
+  //#define Y2_DRIVER_TYPE A4988
+  //#define Z2_DRIVER_TYPE A4988
+  //#define Z3_DRIVER_TYPE A4988
+  //#define Z4_DRIVER_TYPE A4988
+  //#define I_DRIVER_TYPE  A4988
+  //#define J_DRIVER_TYPE  A4988
+  //#define K_DRIVER_TYPE  A4988
+  #define E0_DRIVER_TYPE A4988
+  //#define E1_DRIVER_TYPE A4988
+  //#define E2_DRIVER_TYPE A4988
+  //#define E3_DRIVER_TYPE A4988
+  //#define E4_DRIVER_TYPE A4988
+  //#define E5_DRIVER_TYPE A4988
+  //#define E6_DRIVER_TYPE A4988
+  //#define E7_DRIVER_TYPE A4988
+#endif
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
@@ -974,10 +1017,17 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT \
-    {                               \
-        80, 80, 400, 96             \
-    } // for LK4 pro
+#if defined(CustomMachine)
+  #define DEFAULT_AXIS_STEPS_PER_UNIT \
+      {                               \
+          80.20, 100.30, 1616.00, 783.00           \
+      } // by yours motors, pulleys, Z-screws, extruder
+#else
+  #define DEFAULT_AXIS_STEPS_PER_UNIT \
+      {                               \
+          80, 80, 400, 96             \
+      } // for LK4 pro
+#endif
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -1024,9 +1074,9 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION 3000         // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION 3000 // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION 3000  // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_ACCELERATION 1000         // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION 1000 // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION 1000  // X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Default Jerk limits (mm/s)
@@ -1038,26 +1088,29 @@
  */
 #define CLASSIC_JERK
 #if ENABLED(CLASSIC_JERK)
-#define DEFAULT_XJERK 10.0
-#define DEFAULT_YJERK 10.0
-#define DEFAULT_ZJERK 0.3
-//#define DEFAULT_IJERK  0.3
-//#define DEFAULT_JJERK  0.3
-//#define DEFAULT_KJERK  0.3
+  #define DEFAULT_XJERK 10.0
+  #define DEFAULT_YJERK 10.0
+  #define DEFAULT_ZJERK 0.3
+  //#define DEFAULT_IJERK  0.3
+  //#define DEFAULT_JJERK  0.3
+  //#define DEFAULT_KJERK  0.3
 
-//#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
+  //#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
 
-//#define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
-#if ENABLED(LIMITED_JERK_EDITING)
-#define MAX_JERK_EDIT_VALUES \
-    {                        \
-        20, 20, 0.6, 10      \
-    } // ...or, set your own edit limits
+  //#define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
+  #if ENABLED(LIMITED_JERK_EDITING)
+  #define MAX_JERK_EDIT_VALUES \
+      {                        \
+          20, 20, 0.6, 10      \
+      } // ...or, set your own edit limits
+  #endif
 #endif
+
+#if defined(CustomMachine) //some boards needs another value
+  #define DEFAULT_EJERK 10.0 // May be used by Linear Advance
+#else
+  #define DEFAULT_EJERK 5.0 // May be used by Linear Advance
 #endif
-
-#define DEFAULT_EJERK 5.0 // May be used by Linear Advance
-
 /**
  * Junction Deviation Factor
  *
@@ -1252,11 +1305,17 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-
-#define NOZZLE_TO_PROBE_OFFSET \
+#if defined(CustomMachine) 
+  #define NOZZLE_TO_PROBE_OFFSET \
     {                          \
         -32, -6, -1.2          \
-    } // Value for Alphawise and Longer U30 pro LK4 pro  with BLtouch support => https://www.thingiverse.com/thing:4261004
+    } // if you have own geometry...
+#else
+  #define NOZZLE_TO_PROBE_OFFSET \
+      {                          \
+          -32, -6, -1.2          \
+      } // Value for Alphawise and Longer U30 pro LK4 pro  with BLtouch support => https://www.thingiverse.com/thing:4261004
+#endif
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1416,20 +1475,30 @@
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
-#define INVERT_X_DIR true  //  For Alphawise and Longer U30 pro LK4 pro
-#define INVERT_Y_DIR false //  For Alphawise and Longer U30 pro LK4 pro
-#define INVERT_Z_DIR true  //  For Alphawise and Longer U30 pro LK4 pro
+#if defined(CustomMachine) //if you have some modifications in stepper directions
+  #define INVERT_X_DIR true  
+  #define INVERT_Y_DIR false 
+  #define INVERT_Z_DIR true  
+#else
+  #define INVERT_X_DIR true  //  For Alphawise and Longer U30 pro LK4 pro
+  #define INVERT_Y_DIR false //  For Alphawise and Longer U30 pro LK4 pro
+  #define INVERT_Z_DIR true  //  For Alphawise and Longer U30 pro LK4 pro
+
+#endif
 //#define INVERT_I_DIR false
 //#define INVERT_J_DIR false
 //#define INVERT_K_DIR false
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR true //  For Alphawise and Longer U30 pro LK4 pro
-#ifdef LK1_Pro
-#define INVERT_E0_DIR false
-#else
-#define INVERT_E0_DIR true
+#if defined(CustomMachine) 
+  #define INVERT_E0_DIR false 
+#else 
+  #ifdef LK1_Pro
+    #define INVERT_E0_DIR false
+  #else
+    #define INVERT_E0_DIR true //  For Alphawise and Longer U30 pro LK4 pro
+  #endif
 #endif
 
 #define INVERT_E1_DIR false
@@ -1472,23 +1541,44 @@
 #if defined(LK1_Pro) || defined(LK5_Pro)
   #define X_BED_SIZE 300 // for LK1 pro
   #define Y_BED_SIZE 300 // for LK1 pro
-#else                  // LK4 Pro
-  #define X_BED_SIZE 220 //  For Alphawise and Longer U30 pro LK4 pro
-  #define Y_BED_SIZE 220 //  For Alphawise and Longer U30 pro LK4 pro
+#else    
+  #if defined(CustomMachine) //if you have own geometry
+    #define X_BED_SIZE 230 
+    #define Y_BED_SIZE 220 
+  #else // LK4 Pro
+    #define X_BED_SIZE 220 //  For Alphawise and Longer U30 pro LK4 pro
+    #define Y_BED_SIZE 220 //  For Alphawise and Longer U30 pro LK4 pro
+  #endif
 #endif
 
+
+
+
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS 0
-#define Y_MIN_POS 0
-#define Z_MIN_POS 0
-#define X_MAX_POS X_BED_SIZE
-#define Y_MAX_POS Y_BED_SIZE
+#if defined(CustomMachine) //if you have own geometry
+  #define X_MIN_POS -8
+  #define Y_MIN_POS 0
+  #define Z_MIN_POS 0
+  #define X_MAX_POS X_BED_SIZE
+  #define Y_MAX_POS Y_BED_SIZE
+#else
+  #define X_MIN_POS 0
+  #define Y_MIN_POS 0
+  #define Z_MIN_POS 0
+  #define X_MAX_POS X_BED_SIZE
+  #define Y_MAX_POS Y_BED_SIZE
+#endif
 
 #if defined(LK1_Pro) || defined(LK5_Pro)
   #define Z_MAX_POS 400 // for LK1 pro
-#else                 // LK4 Pro
-  #define Z_MAX_POS 250 //  For Alphawise and Longer U30 pro LK4 pro
+#else    
+  #if defined(CustomMachine)            
+    #define Z_MAX_POS 150 //  if you have own geometry
+  #else // LK4 Pro
+    #define Z_MAX_POS 250 //  For Alphawise and Longer U30 pro LK4 pro
+  #endif
 #endif
+ 
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
 //#define J_MIN_POS 0
@@ -1546,10 +1636,16 @@
  */
 #define FILAMENT_RUNOUT_SENSOR //  had a filament runout sensor
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
-#define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
-#define NUM_RUNOUT_SENSORS 1            // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
-#define FIL_RUNOUT_STATE HIGH           // Pin state indicating that filament is NOT present.
-#define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
+  #define NUM_RUNOUT_SENSORS 1            // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
+  #define FIL_RUNOUT_STATE HIGH           // Pin state indicating that filament is NOT present.
+  #define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
+
+  #if defined(CustomMachine)
+      #define FIL_RUNOUT_ENABLED_DEFAULT false //your mofifications...
+    #else
+      #define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
+  #endif
+
 //#define FIL_RUNOUT_PULLDOWN           // Use internal pulldown for filament runout pins.
 //#define WATCH_ALL_RUNOUT_SENSORS      // Execute runout script on any triggering sensor, not only for the active extruder.
 // This is automatically enabled for MIXING_EXTRUDERs.
@@ -1867,12 +1963,21 @@
 #if ENABLED(LK1_Pro_AutoBed) || ENABLED(LKPro_BLTOUCH)
   #define Z_SAFE_HOMING
 #else
-  //#define Z_SAFE_HOMING
+  #if defined(CustomMachine)
+      #define Z_SAFE_HOMING
+  #else 
+    //#define Z_SAFE_HOMING
+  #endif
 #endif
 
 #if ENABLED(Z_SAFE_HOMING)
-#define Z_SAFE_HOMING_X_POINT X_CENTER // X point for Z homing
-#define Z_SAFE_HOMING_Y_POINT Y_CENTER // Y point for Z homing
+  #if defined(CustomMachine)
+    #define Z_SAFE_HOMING_X_POINT -5 //your own values
+    #define Z_SAFE_HOMING_Y_POINT 0 //your own values
+  #else //default values
+    #define Z_SAFE_HOMING_X_POINT X_CENTER // X point for Z homing
+    #define Z_SAFE_HOMING_Y_POINT Y_CENTER // Y point for Z homing
+  #endif
 #endif
 
 // Homing speeds (mm/min)
@@ -1914,31 +2019,38 @@
  *    +-------------->X     +-------------->X     +-------------->Y
  *     XY_SKEW_FACTOR        XZ_SKEW_FACTOR        YZ_SKEW_FACTOR
  */
-//#define SKEW_CORRECTION
 
-#if ENABLED(SKEW_CORRECTION)
-// Input all length measurements here:
-#define XY_DIAG_AC 142.36 // 282.8427124746
-#define XY_DIAG_BD 141.18 // 282.8427124746
-#define XY_SIDE_AD 100.49 // 200
 
-// Or, set the default skew factors directly here
-// to override the above measurements:
-//#define XY_SKEW_FACTOR 0.0
+#if defined(CustomMachine)
+  #define SKEW_CORRECTION
+  #define XY_SKEW_FACTOR 0.0
+  #define SKEW_CORRECTION_GCODE
+#else
+  //#define SKEW_CORRECTION
+  #if ENABLED(SKEW_CORRECTION)
+    // Input all length measurements here:
+    #define XY_DIAG_AC 142.36 // 282.8427124746
+    #define XY_DIAG_BD 141.18 // 282.8427124746
+    #define XY_SIDE_AD 100.49 // 200
 
-//#define SKEW_CORRECTION_FOR_Z
-#if ENABLED(SKEW_CORRECTION_FOR_Z)
-#define XZ_DIAG_AC 282.8427124746
-#define XZ_DIAG_BD 282.8427124746
-#define YZ_DIAG_AC 282.8427124746
-#define YZ_DIAG_BD 282.8427124746
-#define YZ_SIDE_AD 200
-#define XZ_SKEW_FACTOR 0.0
-#define YZ_SKEW_FACTOR 0.0
-#endif
+    // Or, set the default skew factors directly here
+    // to override the above measurements:
+    //#define XY_SKEW_FACTOR 0.0
 
-// Enable this option for M852 to set skew at runtime
-#define SKEW_CORRECTION_GCODE
+    //#define SKEW_CORRECTION_FOR_Z
+    #if ENABLED(SKEW_CORRECTION_FOR_Z)
+      #define XZ_DIAG_AC 282.8427124746
+      #define XZ_DIAG_BD 282.8427124746
+      #define YZ_DIAG_AC 282.8427124746
+      #define YZ_DIAG_BD 282.8427124746
+      #define YZ_SIDE_AD 200
+      #define XZ_SKEW_FACTOR 0.0
+      #define YZ_SKEW_FACTOR 0.0
+    #endif
+    
+    // Enable this option for M852 to set skew at runtime
+    #define SKEW_CORRECTION_GCODE
+  #endif
 #endif
 
 //=============================================================================
@@ -1959,7 +2071,11 @@
 #define EEPROM_SETTINGS // Persistent storage with M500 and M501
 //#define DISABLE_M503        // Saves ~2700 bytes of PROGMEM. Disable for release!
 #define EEPROM_CHITCHAT    // Give feedback on EEPROM commands. Disable to save PROGMEM.
-#define EEPROM_BOOT_SILENT // Keep M503 quiet and only give errors during first load
+#if defined(CustomMachine) // allways for your modifications
+  #define EEPROM_BOOT_SILENT // Keep M503 quiet and only give errors during first load
+#else
+  //#define EEPROM_BOOT_SILENT // Keep M503 quiet and only give errors during first load
+#endif
 #if ENABLED(EEPROM_SETTINGS)
   //#define EEPROM_AUTO_INIT  // Init EEPROM automatically on any errors.
   //#define EEPROM_INIT_NOW   // Init EEPROM on first boot after a new build.
@@ -1991,16 +2107,28 @@
 // Preheat Constants - Up to 5 are supported without changes
 //
 #define PREHEAT_1_LABEL "PLA"
-#define PREHEAT_1_TEMP_HOTEND 200
+#define PREHEAT_1_TEMP_HOTEND 215
 #define PREHEAT_1_TEMP_BED 60
 #define PREHEAT_1_TEMP_CHAMBER 35
 #define PREHEAT_1_FAN_SPEED 0 // Value from 0 to 255
 
 #define PREHEAT_2_LABEL "ABS"
-#define PREHEAT_2_TEMP_HOTEND 240
+#define PREHEAT_2_TEMP_HOTEND 250
 #define PREHEAT_2_TEMP_BED 100
 #define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED 0 // Value from 0 to 255
+
+#define PREHEAT_3_LABEL "PETG"
+#define PREHEAT_3_TEMP_HOTEND 240
+#define PREHEAT_3_TEMP_BED 75
+#define PREHEAT_3_TEMP_CHAMBER 35
+#define PREHEAT_3_FAN_SPEED 0 // Value from 0 to 255
+
+#define PREHEAT_4_LABEL "FLEX"
+#define PREHEAT_4_TEMP_HOTEND 230
+#define PREHEAT_4_TEMP_BED 50
+#define PREHEAT_4_TEMP_CHAMBER 35
+#define PREHEAT_4_FAN_SPEED 0 // Value from 0 to 255
 
 /**
  * Nozzle Park
@@ -2017,10 +2145,17 @@
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
 // Specify a park position as { X, Y, Z_raise }
-#define NOZZLE_PARK_POINT                      \
-    {                                          \
-        (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 \
-    }
+#if defined(CustomMachine) //modified - like Prusa Front righr corner
+  #define NOZZLE_PARK_POINT                      \
+      {                                          \
+          (X_MAX_POS - 3), (Y_MIN_POS + 1), 20 \
+      }
+#else //default for Longer 
+  #define NOZZLE_PARK_POINT                      \
+      {                                          \
+          (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 \
+      }
+#endif
 //#define NOZZLE_PARK_X_ONLY          // X move only is required to park
 //#define NOZZLE_PARK_Y_ONLY          // Y move only is required to park
 #define NOZZLE_PARK_Z_RAISE_MIN 2   // (mm) Always raise Z by at least this distance
@@ -2138,8 +2273,12 @@
  *   M76 - Pause the print job timer
  *   M77 - Stop the print job timer
  */
-#define PRINTJOB_TIMER_AUTOSTART
 
+#if defined(CustomMachine)
+  //#define PRINTJOB_TIMER_AUTOSTART I am trying to solve  - SKR 2 has some problem with EEPROM
+#else
+  #define PRINTJOB_TIMER_AUTOSTART
+#endif
 /**
  * Print Counter
  *
@@ -2152,7 +2291,12 @@
  *
  * View the current statistics with M78.
  */
-#define PRINTCOUNTER
+#if defined(CustomMachine)
+  //#define PRINTCOUNTER // I am trying to fix - some compilation problem with FLASH_EEPROM_EMULATION
+#else
+  #define PRINTCOUNTER
+#endif
+
 #if ENABLED(PRINTCOUNTER)
 #define PRINTCOUNTER_SAVE_INTERVAL 60 // (minutes) EEPROM save interval during print
 #endif
