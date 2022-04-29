@@ -107,7 +107,7 @@
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
   #if defined(CustomMachine)   
-      #define MOTHERBOARD BOARD_BTT_SKR_V2_0_REV_B //for yours upgraded board
+      #define MOTHERBOARD BOARD_BTT_SKR_V2_0_REV_B //for your upgraded board
    #else
       #define MOTHERBOARD BOARD_LONGER3D_LKx_PRO //  For Alphawise and Longer U30 pro LK4 pro with LGT motherboard
     #endif
@@ -123,8 +123,9 @@
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
  #if defined(CustomMachine)
-    #define SERIAL_PORT 1 // for BigtreeTech SKR V2.0
-    #define SERIAL_PORT_2 -1 // for BigtreeTech SKR V2.0
+    #define SERIAL_PORT 2 // for BigtreeTech SKR V2.0  - by defaut it works with 1, but there is a conflict with LCD_SERIAL_PORT
+    #define SERIAL_PORT_2 -1 // for BigtreeTech SKR V2.0 - must be -1
+    #define SERIAL_PORT_3 3 // for BigtreeTech SKR V2.0  - testing - it works
  #else
     #define SERIAL_PORT 0
 #endif
@@ -149,7 +150,7 @@
  * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
 //#define SERIAL_PORT_2 -1
-//#define BAUDRATE_2 250000   // Enable to override BAUDRATE
+//#define BAUDRATE_2 115200   // Enable to override BAUDRATE
 
 /**
  * Select a third serial port on the board to use for communication with the host.
@@ -158,7 +159,7 @@
  */
 //#define SERIAL_PORT_3 1
 
-//#define BAUDRATE_3 250000   // Enable to override BAUDRATE
+//#define BAUDRATE_3 115200   // Enable to override BAUDRATE
 
 // Enable the Bluetooth serial interface on AT90USB devices
 //#define BLUETOOTH

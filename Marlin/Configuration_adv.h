@@ -1797,7 +1797,7 @@
 #if HAS_DGUS_LCD
 #if ENABLED(LGT_MAC)
   #if defined(CustomMachine)
-    #define LCD_SERIAL_PORT 3 // for BTT SKR 2
+    #define LCD_SERIAL_PORT 1 // only 1 works with stock display (binding to use EXT_UI) works with BTT_SKR_V2.0b
   #else
     #define LCD_SERIAL_PORT 1 // Serial port 1 for Alphawise and Longer with LGT moterboard
   #endif
