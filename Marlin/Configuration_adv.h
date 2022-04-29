@@ -1678,12 +1678,8 @@
    *
    * :[ 'LCD', 'ONBOARD', 'CUSTOM_CABLE' ]
    */
-   #if defined(CustomMachine)
-   #define SDCARD_CONNECTION ONBOARD
-   #else
-   //#define SDCARD_CONNECTION LCD
-   #endif
-
+   //#define SDCARD_CONNECTION ONBOARD
+   
    // Enable if SD detect is rendered useless (e.g., by using an SD extender)
    //#define NO_SD_DETECT
 
